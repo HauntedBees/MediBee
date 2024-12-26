@@ -2,6 +2,7 @@
     import AccountMultiple from "svelte-material-icons/AccountMultiple.svelte";
     import ArrowLeft from "svelte-material-icons/ArrowLeft.svelte";
     import Calendar from "svelte-material-icons/Calendar.svelte";
+    import Home from "svelte-material-icons/Home.svelte";
     import PillMultiple from "svelte-material-icons/PillMultiple.svelte";
     import PlusCircle from "svelte-material-icons/PlusCircle.svelte";
     import ViewList from "svelte-material-icons/ViewList.svelte";
@@ -19,53 +20,45 @@
 </script>
 
 <header class="has-background-primary has-text-black">
-    <span>{pageInfo.displayName || `${patient.name}'s Medical Info`}</span>
-    {#if pageInfo.route !== ""}
-        <button
-            on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}
-        >
-            <ArrowLeft />
-        </button>
-        {#if pageInfo.addNew}
-            <button
-                on:click={() => currentPage.set(pageInfo.addNew!)}
-            >
-                <PlusCircle />
-            </button>
-        {/if}
+    <span>{pageInfo.displayName || `${patient.name}`}</span>
+
+    {#if pageInfo.route === "medicine-list" || pageInfo.route === "edit-medicine"}
+    <button on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}>
+        <Home />
+    </button>
     {:else}
-        <button
-            on:click={() =>
-                NavTo(
-                    "Medicine List",
-                    "medicine-list",
-                    "New Medicine",
-                    "edit-medicine",
-                )}
-        >
-            <PillMultiple />
-        </button>
-        <button
-            on:click={() => NavTo("Taken Medicines", "list-view")}
-        >
-            <ViewList />
-        </button>
-        <button
-            on:click={() => NavTo("Taken Medicines", "calendar-view")}
-        >
-            <Calendar />
-        </button>
-        <button on:click={() => (currentModal = "accounts")}>
-            <AccountMultiple />
-        </button>
+    <button on:click={() => NavTo("Medicine List", "medicine-list", "New Medicine", "edit-medicine")}>
+        <PillMultiple />
+    </button>
     {/if}
+    {#if pageInfo.route === "list-view"}
+    <button on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}>
+        <Home />
+    </button>
+    {:else}
+    <button on:click={() => NavTo("Taken Medicines", "list-view")}>
+        <ViewList />
+    </button>
+    {/if}
+    {#if pageInfo.route === "calendar-view"}
+    <button on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}>
+        <Home />
+    </button>
+    {:else}
+    <button on:click={() => NavTo("Taken Medicines", "calendar-view")}>
+        <Calendar />
+    </button>
+    {/if}
+    <button on:click={() => currentModal = "accounts"}>
+        <AccountMultiple />
+    </button>
 </header>
 
 <div class="modal {currentModal == '' ? '' : 'is-active'}">
     <div class="modal-background"></div>
     <div class="modal-card">
         {#if currentModal === "accounts"}
-            <ChangeAccount on:close={() => (currentModal = "")} />
+            <ChangeAccount on:close={() => {currentModal = ""; NavTo("", "");}} />
         {/if}
     </div>
 </div>
