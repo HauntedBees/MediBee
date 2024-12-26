@@ -27,6 +27,10 @@
     src: url('assets/font/Roboto-Bold.ttf') format('woff2');
 }
 
+html, body {
+    overscroll-behavior: none;
+}
+
 body {
     font-family: 'Roboto';
     margin: 0;
