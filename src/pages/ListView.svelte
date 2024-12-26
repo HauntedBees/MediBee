@@ -40,13 +40,13 @@
 </script>
 <div class="px-4">
     {#each takenList as m}
-    <div class="columns is-mobile">
-        <div class="column is-one-third">{dayjs(m.timeTaken).format("YYYY-MM-DD h:mm A")}</div>
-        <div class="column is-two-fifths has-text-centered">{m.medicineName}</div>
-        <div class="column">{FormatDosage(m)}</div>
+    <div class="columns is-mobile {m.notes ? "" : "pb-4"}">
+        <div class="column is-narrow">{dayjs(m.timeTaken).format("MM/DD h:mm A")}</div>
+        <div class="column has-text-centered">{m.medicineName}</div>
+        <div class="column is-narrow">{FormatDosage(m)}</div>
     </div>
     {#if m.notes}
-    <div>{m.notes}</div>
+    <div class="pb-4">{m.notes}</div>
     {/if}
     {/each}
     {#if hasMore}
@@ -57,3 +57,11 @@
     <span>No more medical history found.</span>
     {/if}
 </div>
+<style>
+    .columns {
+        margin-bottom: 0;
+    }
+    .column {
+        padding-bottom: 0;
+    }
+</style>
