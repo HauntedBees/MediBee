@@ -30,6 +30,13 @@ export async function ImportAllData(file: File, replace = true) {
     });
 }
 
+export function AnyStringMatch(haystacks: string[], needle: string): boolean {
+    return haystacks.some(h => IsStringMatch(h, needle));
+}
+
+export function IsStringMatch(haystack: string, needle: string): boolean {
+    return haystack.toLowerCase().indexOf(needle) >= 0;
+}
 
 export function GetPatientMedicineInfo(patientId: number): Promise<PatientMedicineInfo> {
     return new Promise((resolve, _) => {

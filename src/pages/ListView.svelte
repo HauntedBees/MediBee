@@ -2,7 +2,7 @@
     import dayjs from "dayjs";
     import NoteEdit from "svelte-material-icons/NoteEdit.svelte";
     import Magnify from "svelte-material-icons/Magnify.svelte";
-    import db from "../lib/Data";
+    import db, { AnyStringMatch } from "../lib/Data";
     import { FormatDosage, type MedicineTaken } from "../lib/Models";
     import { currentPatient, currentTakenMedicine } from "../lib/State";
 
@@ -34,15 +34,9 @@
                     return true;
                 }
                 const safeQuery = searchQuery.trim().toLowerCase();
-                if(m.medicineName.toLowerCase().indexOf(safeQuery) >= 0) {
-                    return true;
-                }
-                if(m.notes.toLowerCase().indexOf(safeQuery) >= 0) {
-                    return true;
-                }
                 const dateTaken = dayjs(m.timeTaken);
                 const month = dateTaken.format("MMMM").toLowerCase();
-                if(month.indexOf(safeQuery) >= 0 || safeQuery.indexOf(month) >= 0) {
+                if(AnyStringMatch([m.medicineName, m.notes, month], safeQuery)) {
                     return true;
                 }
                 const maybeDate = dayjs(searchQuery);

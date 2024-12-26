@@ -43,7 +43,7 @@
 
 <div class="columns is-mobile">
     <div class="column">
-        <div class="fixed-grid has-4-cols">
+        <div class="fixed-grid has-3-cols">
             <div id="icons" class="grid">
                 {#each iconList as key}
                     <button
@@ -59,7 +59,7 @@
                 {/each}
             </div>
         </div>
-        <div class="fixed-grid has-4-cols">
+        <div class="fixed-grid has-3-cols">
             <div id="colors" class="grid">
                 {#each colors as color}
                     <button
@@ -165,7 +165,7 @@
         margin: 4px;
     }
     .orb.active {
-        border: 4px solid #FFFFFF;
+        border: 4px solid #CC00CC;
     }
     .button-icon {
         background-color: #ffffff00;
