@@ -4,7 +4,7 @@
     import { FormatDosage, type MedicineTaken } from "../lib/Models";
     import { currentPatient } from "../lib/State";
 
-    let earliestDateToShow = dayjs().startOf("month");
+    let amountToShow = 30;
     let takenList: MedicineTaken[] = [];
 
     let hasMore = true;
@@ -16,24 +16,21 @@
     });
 
     function ShowMore() {
-        earliestDateToShow = earliestDateToShow.subtract(1, "month");
+        amountToShow += 30;
         GetLatestTakens();
     }
 
     function GetLatestTakens() {
         db.taken
-            .where("timeTaken")
-            .above(earliestDateToShow.toDate())
+            .orderBy("timeTaken")
+            .reverse()
+            .limit(amountToShow)
             .and(m => m.patientId === currentPatientId)
             .toArray()
-            .then((medicines) => {
-                if(medicines.length === takenList.length) {
+            .then(medicines => {
+                if(medicines.length < amountToShow) {
                     hasMore = false;
-                    return;
                 }
-                medicines.sort(
-                    (a, b) => b.timeTaken.getTime() - a.timeTaken.getTime(),
-                );
                 takenList = medicines;
             });
     }
@@ -53,8 +50,6 @@
         <button class="button is-primary" on:click={ShowMore}>
             Show More
         </button>
-    {:else}
-    <span>No more medical history found.</span>
     {/if}
 </div>
 <style>
