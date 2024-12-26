@@ -2,7 +2,7 @@
     import dayjs from "dayjs";
     import TextAreaControl from "../components/TextAreaControl.svelte";
     import db from "../lib/Data";
-    import type { Medicine } from "../lib/Models";
+    import { FormatDosage, type Medicine } from "../lib/Models";
     import { currentPatient, currentTakenMedicine } from "../lib/State";
 
     const dosages = [0.25, 0.5, 1, 2, 3, 4, 5];
@@ -53,9 +53,9 @@
                 <div class="p-4">
                     <div class="columns is-mobile">
                         <strong class="column">Single Dose: </strong>
-                        <span class="column">{medicine.dosageAmount}{medicine.dosageUnit}</span>
+                        <span class="column">{FormatDosage(medicine)}</span>
                         <strong class="column">This Dose: </strong>
-                        <span class="column">{medicine.dosageAmount * amountToTake}{medicine.dosageUnit}</span>
+                        <span class="column">{FormatDosage({ dosageAmount: medicine.dosageAmount * amountToTake, dosageUnit: medicine.dosageUnit })}</span>
                     </div>
                     <div class="block has-text-centered">
                         <button
