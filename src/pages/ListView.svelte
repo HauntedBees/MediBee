@@ -1,6 +1,7 @@
 <script lang="ts">
     import dayjs from "dayjs";
     import NoteEdit from "svelte-material-icons/NoteEdit.svelte";
+    import Magnify from "svelte-material-icons/Magnify.svelte";
     import db from "../lib/Data";
     import { FormatDosage, type MedicineTaken } from "../lib/Models";
     import { currentPatient, currentTakenMedicine } from "../lib/State";
@@ -9,6 +10,7 @@
     let takenList: (MedicineTaken | string)[] = [];
 
     let hasMore = true;
+    let searchQuery = "";
 
     let currentPatientId = 0;
     currentPatient.subscribe(p => {
@@ -27,6 +29,28 @@
         db.taken
             .orderBy("timeTaken")
             .reverse()
+            .filter(m => {
+                if(searchQuery.trim() === "") {
+                    return true;
+                }
+                const safeQuery = searchQuery.trim().toLowerCase();
+                if(m.medicineName.toLowerCase().indexOf(safeQuery) >= 0) {
+                    return true;
+                }
+                if(m.notes.toLowerCase().indexOf(safeQuery) >= 0) {
+                    return true;
+                }
+                const dateTaken = dayjs(m.timeTaken);
+                const month = dateTaken.format("MMMM").toLowerCase();
+                if(month.indexOf(safeQuery) >= 0 || safeQuery.indexOf(month) >= 0) {
+                    return true;
+                }
+                const maybeDate = dayjs(searchQuery);
+                if(maybeDate.isValid()) {
+                    return dateTaken.isSame(maybeDate, "day");
+                }
+                return false;
+            })
             .limit(amountToShow)
             .and(m => m.patientId === currentPatientId)
             .toArray()
@@ -78,6 +102,21 @@
         }
     }
 </script>
+
+<div class="field">
+    <p class="control has-icons-left">
+        <input
+            class="input"
+            type="text"
+            placeholder="Search"
+            bind:value={searchQuery}
+            on:input={GetLatestTakens}
+        />
+        <span class="icon is-small is-left">
+            <Magnify />
+        </span>
+    </p>
+</div>
 <div class="px-2">
     {#each takenList as m}
         {#if typeof m === "string"}
