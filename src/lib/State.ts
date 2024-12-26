@@ -22,31 +22,18 @@ export interface PageData {
     backDisplayName: string;
     backRoute: string;
     data: any;
-    addNew?: PageData;
 }
 
 
 export function NavTo(
     name: string,
     route: string,
-    addNewDisplay: string = "",
-    addNewRoute: string = "",
 ) {
     currentPage.set({
         displayName: name,
         route: route,
         backDisplayName: "",
         backRoute: "",
-        data: null,
-        addNew:
-            addNewDisplay == ""
-                ? undefined
-                : {
-                    displayName: addNewDisplay,
-                    route: addNewRoute,
-                    backDisplayName: name,
-                    backRoute: route,
-                    data: null,
-                },
+        data: null
     });
 }

@@ -25,12 +25,7 @@
     currentPatient.subscribe(p => currentPatientId = p.id || 0);
     db.patient.toArray().then(p => patients = p);
     function GoHome() {
-        NavTo(
-            "Medicine List",
-            "medicine-list",
-            "New Medicine",
-            "edit-medicine",
-        );
+        NavTo("Medicine List", "medicine-list");
     }
     function SaveMedicine() {
         if (medicine.id) {

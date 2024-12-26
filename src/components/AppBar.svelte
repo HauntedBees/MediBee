@@ -1,10 +1,8 @@
 <script lang="ts">
     import AccountMultiple from "svelte-material-icons/AccountMultiple.svelte";
-    import ArrowLeft from "svelte-material-icons/ArrowLeft.svelte";
     import Calendar from "svelte-material-icons/Calendar.svelte";
     import Home from "svelte-material-icons/Home.svelte";
     import PillMultiple from "svelte-material-icons/PillMultiple.svelte";
-    import PlusCircle from "svelte-material-icons/PlusCircle.svelte";
     import ViewList from "svelte-material-icons/ViewList.svelte";
     import type { Patient } from "../lib/Models";
     import { currentPage, currentPatient, NavTo, type PageData } from "../lib/State";
@@ -20,14 +18,14 @@
 </script>
 
 <header class="has-background-primary has-text-black">
-    <span>{pageInfo.displayName || `${patient.name}`}</span>
+    <span>{pageInfo.displayName || patient.name}</span>
 
     {#if pageInfo.route === "medicine-list" || pageInfo.route === "edit-medicine"}
     <button on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}>
         <Home />
     </button>
     {:else}
-    <button on:click={() => NavTo("Medicine List", "medicine-list", "New Medicine", "edit-medicine")}>
+    <button on:click={() => NavTo("Medicine List", "medicine-list")}>
         <PillMultiple />
     </button>
     {/if}
