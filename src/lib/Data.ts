@@ -22,8 +22,8 @@ export async function ExportAllData(filename: string) {
     const out = await exportDB(db, { prettyJson: true });
     download(out, filename, "text/json");
 }
-export async function ImportAllData(file: Blob, replace = true) {
-    const inp = await importInto(db, file, {
+export async function ImportAllData(file: File, replace = true) {
+    await importInto(db, file, {
         clearTablesBeforeImport: replace,
         overwriteValues: replace,
         acceptChangedPrimaryKey: replace

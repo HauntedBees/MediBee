@@ -1,8 +1,9 @@
 <script lang="ts">
-	import db, { ExportAllData } from "../lib/Data";
+	import db, { ExportAllData, ImportAllData } from "../lib/Data";
 	import type { Patient } from "../lib/Models";
 	import { currentPatient } from "../lib/State";
 	import { createEventDispatcher } from "svelte";
+  	import FileUpload from "svelte-material-icons/FileUpload.svelte";
 	import RadioBoxMarked from "svelte-material-icons/RadioboxMarked.svelte";
 	import RadioBoxBlank from "svelte-material-icons/RadioboxBlank.svelte";
 	import AccountEdit from "svelte-material-icons/AccountEdit.svelte";
@@ -12,11 +13,24 @@
 	import { SaveSettings } from "../lib/Settings";
     import dayjs from "dayjs";
 	const dispatch = createEventDispatcher();
-	let currentPatientId = 0;
+
 	let currentEditedPatient: Patient | undefined;
+
+	let currentPatientId = 0;
+	currentPatient.subscribe(patient => currentPatientId = patient.id || 0);
+
 	let patients: Patient[];
 	db.patient.toArray().then(ps => { patients = ps });
-	currentPatient.subscribe(patient => currentPatientId = patient.id || 0);
+
+	let files: FileList;
+	$: {
+		if(files) {
+			ImportAllData(files[0], true).then(() => {
+				location.reload();
+			})
+		}
+	}
+
 	function CloseModal() {
 		currentEditedPatient = undefined;
 		currentPatientId = 0;
@@ -120,6 +134,21 @@
 					New Account
 				</button>
 			<button class="button is-info" on:click={Export}>Export</button>
+			<span class="file is-info mt-5">
+				<label class="file-label">
+					<input
+						class="file-input"
+						type="file"
+						name="import"
+						accept="application/json"
+						bind:files
+					/>
+					<span class="file-cta">
+						<span class="file-label"> Import</span>
+				  	</span>
+				</label>
+			</span>
+			
 			<button class="button" on:click={CloseModal}>Cancel</button>
 		{/if}
 	</div>

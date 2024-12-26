@@ -16,7 +16,7 @@
     pageName = sub.route;
     params = sub.data || {};
   });
-  Initialize().then(_ => (loading = false));
+  Initialize().then(_ => loading = false);
 </script>
 
 <AppBar />
