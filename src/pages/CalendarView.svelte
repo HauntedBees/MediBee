@@ -1,5 +1,7 @@
 <script lang="ts">
     import dayjs from "dayjs";
+	import ArrowLeft from "svelte-material-icons/ArrowLeft.svelte";
+	import ArrowRight from "svelte-material-icons/ArrowRight.svelte";
     import { FormatDosage, type Medicine, type MedicineTaken } from "../lib/Models";
     import db from "../lib/Data";
 
@@ -91,9 +93,21 @@
 <table class="table is-fullwidth">
 	<thead class="thead">
 		<tr class="has-text-centered">
-			<th>&lt;</th>
+			<th>
+				<button on:click={() => UpdateMonth(-1)}>
+					<span class="icon">
+						<ArrowLeft />
+					</span>
+				</button>
+			</th>
 			<th colspan="5">{currentMonth.format("MMMM")}</th>
-			<th>&gt;</th>
+			<th>
+				<button on:click={() => UpdateMonth(1)}>
+					<span class="icon">
+						<ArrowRight />
+					</span>
+				</button>
+			</th>
 		</tr>
 		<tr class="has-text-centered">
 			<th>SUN</th>
