@@ -81,6 +81,7 @@
         height: 64px;
         padding: 0 8px;
         position: sticky;
+        z-index: 9999;
     }
     span {
         flex-grow: 1;

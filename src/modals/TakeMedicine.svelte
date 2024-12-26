@@ -10,17 +10,37 @@
     let currentPatientId = 0;
     currentPatient.subscribe((patient) => (currentPatientId = patient.id || 0));
 
+    let editId = 0;
     let amountToTake = 1, amountIdx = 2;
     let currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
     let notes = "";
 
     let medicine: Medicine | undefined;
     currentTakenMedicine.subscribe(m => {
-        medicine = m;
-        amountIdx = 2;
-        amountToTake = 1;
-        currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
-        notes = "";
+        if(!m || "frequency" in m) {
+            medicine = m;
+            editId = 0;
+            amountIdx = 2;
+            amountToTake = 1;
+            currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
+            notes = "";
+        } else {
+            db.medicine.get(m.medicineId).then(mm => {
+                if(!mm) {
+                    return;
+                }
+                medicine = mm;
+                editId = m.id || 0;
+                const baseAmountToTake = m.dosageAmount / mm.dosageAmount;
+                amountToTake = Math.round(baseAmountToTake * 4) / 4;
+                amountIdx = dosages.indexOf(amountToTake);
+                if(amountIdx < 0) {
+                    amountIdx = 2;
+                }
+                currentTime = dayjs(m.timeTaken).format("YYYY-MM-DDTHH:mm");
+                notes = m.notes;
+            });
+        }
     });
 
     function AdjustAmount(idxOffset: number) {
@@ -32,15 +52,28 @@
         if (!medicine) {
             return;
         }
-        db.taken.add({
-            patientId: currentPatientId,
-            medicineId: medicine.id || 0,
-            medicineName: medicine.name,
-            dosageAmount: medicine.dosageAmount * amountToTake,
-            dosageUnit: medicine.dosageUnit,
-            timeTaken: dayjs(currentTime).toDate(),
-            notes: notes,
-        }).then(CloseModal);
+        if(editId) {
+            db.taken.update(editId, {
+                id: editId,
+                patientId: currentPatientId,
+                medicineId: medicine.id || 0,
+                medicineName: medicine.name,
+                dosageAmount: medicine.dosageAmount * amountToTake,
+                dosageUnit: medicine.dosageUnit,
+                timeTaken: dayjs(currentTime).toDate(),
+                notes: notes
+            }).then(CloseModal);
+        } else {
+            db.taken.add({
+                patientId: currentPatientId,
+                medicineId: medicine.id || 0,
+                medicineName: medicine.name,
+                dosageAmount: medicine.dosageAmount * amountToTake,
+                dosageUnit: medicine.dosageUnit,
+                timeTaken: dayjs(currentTime).toDate(),
+                notes: notes
+            }).then(CloseModal);
+        }
     }
     function CloseModal() {
         currentTakenMedicine.set(undefined);

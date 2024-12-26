@@ -1,8 +1,9 @@
 <script lang="ts">
     import dayjs from "dayjs";
+    import NoteEdit from "svelte-material-icons/NoteEdit.svelte";
     import db from "../lib/Data";
     import { FormatDosage, type MedicineTaken } from "../lib/Models";
-    import { currentPatient } from "../lib/State";
+    import { currentPatient, currentTakenMedicine } from "../lib/State";
 
     let amountToShow = 30;
     let takenList: (MedicineTaken | string)[] = [];
@@ -14,6 +15,8 @@
         currentPatientId = p.id || 0;
         GetLatestTakens();
     });
+
+    currentTakenMedicine.subscribe(_ => { GetLatestTakens() });
 
     function ShowMore() {
         amountToShow += 30;
@@ -82,8 +85,18 @@
         {:else}
             <div class="columns is-gapless is-vcentered is-mobile mb-0 {m.notes ? "" : "pb-4"}">
                 <div class="column is-4 is-size-7">{GetDateFormat(m)}</div>
-                <div class="column is-6">{m.medicineName}</div>
+                <div class="column is-5">{m.medicineName}</div>
                 <div class="column is-2 is-size-7">{FormatDosage(m)}</div>
+                <div class="column is-1">
+                    <button 
+                        on:click={() => currentTakenMedicine.set(m)}
+                        class="button is-info is-small is-rounded"
+                    >
+                        <span class="icon is-small">
+                            <NoteEdit />
+                        </span>
+                    </button>
+                </div>
             </div>
             {#if m.notes}
             <div class="pb-4 is-size-7">{m.notes}</div>

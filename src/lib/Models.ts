@@ -30,7 +30,6 @@ export interface MedicineTaken {
     notes: string;
 }
 
-
 export interface MedicineToTake {
     medicine: Medicine;
     amountNeededToday: number;

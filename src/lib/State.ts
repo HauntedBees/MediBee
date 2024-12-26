@@ -1,12 +1,12 @@
 import { writable, type Writable } from "svelte/store";
-import type { Medicine, Patient } from "./Models";
+import type { Medicine, MedicineTaken, Patient } from "./Models";
 
 export const currentPatient: Writable<Patient> = writable({
     name: "",
     notes: ""
 });
 
-export const currentTakenMedicine: Writable<Medicine | undefined> = writable(undefined);
+export const currentTakenMedicine: Writable<Medicine | MedicineTaken | undefined> = writable(undefined);
 
 export const currentPage: Writable<PageData> = writable({
     displayName: "",
