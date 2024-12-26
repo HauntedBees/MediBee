@@ -75,18 +75,18 @@
         }
     }
 </script>
-<div class="px-4">
+<div class="px-2">
     {#each takenList as m}
         {#if typeof m === "string"}
-            <h2 class="subtitle mb-1">{m}</h2>
+            <h2 class="subtitle mb-2 mt-3">{m}</h2>
         {:else}
-            <div class="columns is-mobile {m.notes ? "" : "pb-4"}">
-                <div class="column is-narrow">{GetDateFormat(m)}</div>
-                <div class="column has-text-centered">{m.medicineName}</div>
-                <div class="column is-narrow">{FormatDosage(m)}</div>
+            <div class="columns is-gapless is-vcentered is-mobile mb-0 {m.notes ? "" : "pb-4"}">
+                <div class="column is-4 is-size-7">{GetDateFormat(m)}</div>
+                <div class="column is-6">{m.medicineName}</div>
+                <div class="column is-2 is-size-7">{FormatDosage(m)}</div>
             </div>
             {#if m.notes}
-            <div class="pb-4">{m.notes}</div>
+            <div class="pb-4 is-size-7">{m.notes}</div>
             {/if}
         {/if}
     {/each}
