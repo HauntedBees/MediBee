@@ -7,15 +7,21 @@
 
     const dosages = [0.25, 0.5, 1, 2, 3, 4, 5];
 
-    let medicine: Medicine | undefined;
-    currentTakenMedicine.subscribe((m) => (medicine = m));
-
     let currentPatientId = 0;
     currentPatient.subscribe((patient) => (currentPatientId = patient.id || 0));
 
     let amountToTake = 1, amountIdx = 2;
     let currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
     let notes = "";
+
+    let medicine: Medicine | undefined;
+    currentTakenMedicine.subscribe(m => {
+        medicine = m;
+        amountIdx = 2;
+        amountToTake = 1;
+        currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
+        notes = "";
+    });
 
     function AdjustAmount(idxOffset: number) {
         const adjusted = amountIdx + idxOffset;
