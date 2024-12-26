@@ -1,0 +1,33 @@
+{
+  "name": "medtracker",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "check": "svelte-check --tsconfig ./tsconfig.json && tsc -p tsconfig.node.json"
+  },
+  "devDependencies": {
+    "@creativebulma/bulma-tooltip": "^1.2.0",
+    "@sveltejs/vite-plugin-svelte": "^5.0.0",
+    "@tsconfig/svelte": "^5.0.4",
+    "@types/downloadjs": "^1.4.6",
+    "sass-embedded": "^1.83.0",
+    "simple-svelte-autocomplete": "^2.5.2",
+    "svelte": "^5.2.7",
+    "svelte-check": "^4.1.0",
+    "tslib": "^2.8.1",
+    "typescript": "~5.6.2",
+    "vite": "^6.0.1"
+  },
+  "dependencies": {
+    "bulma": "^1.0.2",
+    "dayjs": "^1.11.13",
+    "dexie": "^4.0.10",
+    "dexie-export-import": "^4.1.4",
+    "downloadjs": "^1.4.7",
+    "svelte-material-icons": "^3.0.5"
+  }
+}
