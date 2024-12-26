@@ -1,0 +1,37 @@
+{
+	"name": "MediBee",
+	"short_name": "MediBee",
+	"start_url": "/medibee/index.html",
+	"display": "standalone",
+	"background_color": "#1F263D",
+	"lang": "en",
+	"scope": "/medibee/",
+	"icons": [
+		{
+			"src": "https://www.hauntedbees.com/misc/pwa_icons/icon-128x128.png",
+			"sizes": "128x128",
+			"type": "image/png"
+		},
+		{
+			"src": "https://www.hauntedbees.com/misc/pwa_icons/icon-144x144.png",
+			"sizes": "144x144",
+			"type": "image/png"
+		},
+		{
+			"src": "https://www.hauntedbees.com/misc/pwa_icons/icon-152x152.png",
+			"sizes": "152x152",
+			"type": "image/png"
+		},
+		{
+			"src": "https://www.hauntedbees.com/misc/pwa_icons/icon-192x192.png",
+			"sizes": "192x192",
+			"type": "image/png"
+		},
+		{
+			"src": "https://www.hauntedbees.com/misc/pwa_icons/icon-256x256.png",
+			"sizes": "256x256",
+			"type": "image/png"
+		}
+	],
+	"theme_color": "#D10096"
+}
