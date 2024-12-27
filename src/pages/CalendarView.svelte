@@ -90,18 +90,18 @@
 	}
 	UpdateMonth(0);
 </script>
-<table class="table is-fullwidth">
+<table class="table is-fullwidth is-narrow">
 	<thead class="thead">
-		<tr class="has-text-centered">
-			<th>
+		<tr>
+			<th class="has-text-centered">
 				<button on:click={() => UpdateMonth(-1)}>
 					<span class="icon">
 						<ArrowLeft />
 					</span>
 				</button>
 			</th>
-			<th colspan="5">{currentMonth.format("MMMM")}</th>
-			<th>
+			<th class="has-text-centered" colspan="5">{currentMonth.format("MMMM")}</th>
+			<th class="has-text-centered">
 				<button on:click={() => UpdateMonth(1)}>
 					<span class="icon">
 						<ArrowRight />
@@ -124,9 +124,9 @@
 			<tr>
 				{#each WeekArray(week) as day}
 					<td>
-						<div class="has-text-right">{day.format("D")}</div>
+						<div class="has-text-right {day.isSame(currentMonth, "month") ? "" : "has-text-light"}">{day.format("D")}</div>
 						{#each medicineDictionary[day.format()] as m}
-							<div class="tag has-text-black" style="background-color: {medicines[m.medicineId]?.color ?? "#FFFFFF"}">
+							<div class="medinfo mb-1 p-1 has-text-black" style="background-color: {medicines[m.medicineId]?.color ?? "#FFFFFF"}">
 								{m.medicineName} ({FormatDosage(m)})
 							</div>
 						{/each}
@@ -136,3 +136,10 @@
 		{/each}
 	</tbody>
 </table>
+<style>
+	.medinfo {
+		border-radius: 4px;
+		font-size: 0.75rem;
+		word-break: break-all;
+	}
+</style>
