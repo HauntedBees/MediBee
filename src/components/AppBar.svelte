@@ -20,29 +20,22 @@
 <header class="has-background-primary has-text-black">
     <span>{pageInfo.displayName || patient.name}</span>
 
-    {#if pageInfo.route === "medicine-list" || pageInfo.route === "edit-medicine"}
+    {#if pageInfo.route !== ""}
     <button on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}>
         <Home />
     </button>
-    {:else}
+    {/if}
+    {#if pageInfo.route !== "medicine-list" && pageInfo.route !== "edit-medicine"}
     <button on:click={() => NavTo("Medicine List", "medicine-list")}>
         <PillMultiple />
     </button>
     {/if}
-    {#if pageInfo.route === "list-view"}
-    <button on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}>
-        <Home />
-    </button>
-    {:else}
+    {#if pageInfo.route !== "list-view"}
     <button on:click={() => NavTo("Taken Medicines", "list-view")}>
         <ViewList />
     </button>
     {/if}
-    {#if pageInfo.route === "calendar-view"}
-    <button on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}>
-        <Home />
-    </button>
-    {:else}
+    {#if pageInfo.route !== "calendar-view"}
     <button on:click={() => NavTo("Taken Medicines", "calendar-view")}>
         <Calendar />
     </button>
