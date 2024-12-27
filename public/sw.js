@@ -25,7 +25,7 @@ if (!self.define) {
         i[o] = Promise.all(n.map((e => d[e] || f(e)))).then((e => (r(...e), c)))
     }
 }
-define(["./workbox-3625d7b0"], (function(e) {
+define(["./workbox"], (function(e) {
     "use strict";
     self.skipWaiting(), e.clientsClaim(), e.precacheAndRoute([{
         url: "assets/index.BlPLida2.js",
@@ -34,7 +34,7 @@ define(["./workbox-3625d7b0"], (function(e) {
         url: "assets/index.DZ4g0vno.css",
         revision: null
     }, {
-        url: "assets/workbox-3625d7b0.js",
+        url: "assets/workbox.js",
         revision: null
     }, {
         url: "index.html",

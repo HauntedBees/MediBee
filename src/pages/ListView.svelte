@@ -25,7 +25,10 @@
         GetLatestTakens();
     }
 
-    function GetLatestTakens() {
+    function GetLatestTakens(reset = false) {
+        if(reset) {
+            hasMore = true;
+        }
         db.taken
             .orderBy("timeTaken")
             .reverse()
@@ -104,7 +107,7 @@
             type="text"
             placeholder="Search"
             bind:value={searchQuery}
-            on:input={GetLatestTakens}
+            on:input={() => GetLatestTakens(true)}
         />
         <span class="icon is-small is-left">
             <Magnify />
