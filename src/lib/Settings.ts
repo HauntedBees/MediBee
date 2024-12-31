@@ -7,7 +7,7 @@ export interface Settings {
 }
 
 export async function SaveSettings(patient: Patient | undefined) {
-    if(patient) {
+    if (patient) {
         const settings = {
             lastPatient: patient
         };

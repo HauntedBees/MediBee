@@ -11,13 +11,24 @@
     currentPatient.subscribe((patient) => (currentPatientId = patient.id || 0));
 
     let editId = 0;
-    let amountToTake = 1, amountIdx = 2;
+    let amountToTake = 1,
+        amountIdx = 2;
     let currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
     let notes = "";
 
+    window.addEventListener("hashchange", (e) => {
+        const oldPath = e.oldURL.split("#")[1];
+        if (oldPath.indexOf("-modal") >= 0) {
+            CloseModal();
+        }
+    });
+
     let medicine: Medicine | undefined;
-    currentTakenMedicine.subscribe(m => {
-        if(!m || "frequency" in m) {
+    currentTakenMedicine.subscribe((m) => {
+        if (!m || "frequency" in m) {
+            if (m) {
+                location.hash = `${location.hash}-modal`;
+            }
             medicine = m;
             editId = 0;
             amountIdx = 2;
@@ -25,8 +36,8 @@
             currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
             notes = "";
         } else {
-            db.medicine.get(m.medicineId).then(mm => {
-                if(!mm) {
+            db.medicine.get(m.medicineId).then((mm) => {
+                if (!mm) {
                     return;
                 }
                 medicine = mm;
@@ -34,7 +45,7 @@
                 const baseAmountToTake = m.dosageAmount / mm.dosageAmount;
                 amountToTake = Math.round(baseAmountToTake * 4) / 4;
                 amountIdx = dosages.indexOf(amountToTake);
-                if(amountIdx < 0) {
+                if (amountIdx < 0) {
                     amountIdx = 2;
                 }
                 currentTime = dayjs(m.timeTaken).format("YYYY-MM-DDTHH:mm");
@@ -52,27 +63,31 @@
         if (!medicine) {
             return;
         }
-        if(editId) {
-            db.taken.update(editId, {
-                id: editId,
-                patientId: currentPatientId,
-                medicineId: medicine.id || 0,
-                medicineName: medicine.name,
-                dosageAmount: medicine.dosageAmount * amountToTake,
-                dosageUnit: medicine.dosageUnit,
-                timeTaken: dayjs(currentTime).toDate(),
-                notes: notes
-            }).then(CloseModal);
+        if (editId) {
+            db.taken
+                .update(editId, {
+                    id: editId,
+                    patientId: currentPatientId,
+                    medicineId: medicine.id || 0,
+                    medicineName: medicine.name,
+                    dosageAmount: medicine.dosageAmount * amountToTake,
+                    dosageUnit: medicine.dosageUnit,
+                    timeTaken: dayjs(currentTime).toDate(),
+                    notes: notes,
+                })
+                .then(CloseModal);
         } else {
-            db.taken.add({
-                patientId: currentPatientId,
-                medicineId: medicine.id || 0,
-                medicineName: medicine.name,
-                dosageAmount: medicine.dosageAmount * amountToTake,
-                dosageUnit: medicine.dosageUnit,
-                timeTaken: dayjs(currentTime).toDate(),
-                notes: notes
-            }).then(CloseModal);
+            db.taken
+                .add({
+                    patientId: currentPatientId,
+                    medicineId: medicine.id || 0,
+                    medicineName: medicine.name,
+                    dosageAmount: medicine.dosageAmount * amountToTake,
+                    dosageUnit: medicine.dosageUnit,
+                    timeTaken: dayjs(currentTime).toDate(),
+                    notes: notes,
+                })
+                .then(CloseModal);
         }
     }
     function CloseModal() {
@@ -86,7 +101,8 @@
         <div class="modal-card">
             <header class="modal-card-head">
                 <p class="modal-card-title">Taking {medicine.name}</p>
-                <button class="delete" aria-label="close" on:click={CloseModal}></button>
+                <button class="delete" aria-label="close" on:click={CloseModal}
+                ></button>
             </header>
             <section class="modal-card-body">
                 <div class="p-4">
@@ -94,11 +110,19 @@
                         <strong class="column">Single Dose: </strong>
                         <span class="column">{FormatDosage(medicine)}</span>
                         <strong class="column">This Dose: </strong>
-                        <span class="column">{FormatDosage({ dosageAmount: medicine.dosageAmount * amountToTake, dosageUnit: medicine.dosageUnit })}</span>
+                        <span class="column"
+                            >{FormatDosage({
+                                dosageAmount:
+                                    medicine.dosageAmount * amountToTake,
+                                dosageUnit: medicine.dosageUnit,
+                            })}</span
+                        >
                     </div>
                     <div class="block has-text-centered">
                         <button
-                            class="button is-large {amountToTake == 0.25 ? '' : 'is-primary'}"
+                            class="button is-large {amountToTake == 0.25
+                                ? ''
+                                : 'is-primary'}"
                             on:click={() => AdjustAmount(-1)}>-</button
                         >
                         <span class="button is-large mx-2">{amountToTake}</span>
@@ -121,7 +145,9 @@
             </section>
             <footer class="modal-card-foot">
                 <div class="buttons">
-                    <button class="button is-success" on:click={TakeMedicine}>Take</button>
+                    <button class="button is-success" on:click={TakeMedicine}
+                        >Take</button
+                    >
                     <button class="button" on:click={CloseModal}>Cancel</button>
                 </div>
             </footer>

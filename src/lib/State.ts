@@ -29,6 +29,7 @@ export function NavTo(
     name: string,
     route: string,
 ) {
+    location.hash = `#${route}`;
     currentPage.set({
         displayName: name,
         route: route,
