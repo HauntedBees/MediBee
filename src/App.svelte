@@ -16,12 +16,12 @@
     pageName = sub.route;
     params = sub.data || {};
   });
-  Initialize().then(_ => loading = false);
+  Initialize().then((_) => (loading = false));
 </script>
 
 <AppBar />
 
-<main class="p-1 m-2">
+<main class={pageName === "calendar-view" ? "py-1 my-2" : "p-1 m-2"}>
   {#if loading}
     Loading
   {:else if pageName === ""}

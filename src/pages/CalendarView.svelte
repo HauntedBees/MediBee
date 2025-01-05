@@ -8,6 +8,7 @@
 		type MedicineTaken,
 	} from "../lib/Models";
 	import db from "../lib/Data";
+	import { currentPatient } from "../lib/State";
 
 	interface MedicineAmount {
 		medicineId: number;
@@ -48,6 +49,7 @@
 				true,
 				false,
 			)
+			.and((m) => m.patientId === currentPatientId)
 			.toArray()
 			.then((ms) => {
 				medicineDictionary = {};
@@ -102,7 +104,12 @@
 			startOfWeek.add(6, "day"),
 		];
 	}
-	UpdateMonth(0);
+
+	let currentPatientId = 0;
+	currentPatient.subscribe((p) => {
+		currentPatientId = p.id || 0;
+		UpdateMonth(0);
+	});
 </script>
 
 <table class="table is-fullwidth is-narrow">
@@ -158,7 +165,8 @@
 									m.medicineId
 								]?.color ?? '#FFFFFF'}"
 							>
-								{m.medicineName} ({FormatDosage(m)})
+								<div>{m.medicineName}</div>
+								<div>{FormatDosage(m)}</div>
 							</div>
 						{/each}
 					</td>
@@ -171,7 +179,7 @@
 <style>
 	.medinfo {
 		border-radius: 4px;
-		font-size: 0.75rem;
+		font-size: 0.65rem;
 		word-break: break-all;
 	}
 </style>
