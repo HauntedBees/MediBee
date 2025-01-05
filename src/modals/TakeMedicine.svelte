@@ -142,6 +142,12 @@
                             type="datetime-local"
                         />
                     </div>
+                    {#if medicine.notes}
+                        <div class="mb-2">
+                            <div>Details</div>
+                            <div class="mx-2">{medicine.notes}</div>
+                        </div>
+                    {/if}
                     <TextAreaControl name="Notes" bind:value={notes} />
                 </div>
             </section>
