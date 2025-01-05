@@ -3,31 +3,33 @@
 	import type { Patient } from "../lib/Models";
 	import { currentPatient } from "../lib/State";
 	import { createEventDispatcher } from "svelte";
-  	import FileUpload from "svelte-material-icons/FileUpload.svelte";
 	import RadioBoxMarked from "svelte-material-icons/RadioboxMarked.svelte";
 	import RadioBoxBlank from "svelte-material-icons/RadioboxBlank.svelte";
 	import AccountEdit from "svelte-material-icons/AccountEdit.svelte";
+	import AccountPlus from "svelte-material-icons/AccountPlus.svelte";
 	import AccountSwitch from "svelte-material-icons/AccountSwitch.svelte";
 	import TextAreaControl from "../components/TextAreaControl.svelte";
 	import TextControl from "../components/TextControl.svelte";
 	import { SaveSettings } from "../lib/Settings";
-    import dayjs from "dayjs";
+	import dayjs from "dayjs";
 	const dispatch = createEventDispatcher();
 
 	let currentEditedPatient: Patient | undefined;
 
 	let currentPatientId = 0;
-	currentPatient.subscribe(patient => currentPatientId = patient.id || 0);
+	currentPatient.subscribe((patient) => (currentPatientId = patient.id || 0));
 
 	let patients: Patient[];
-	db.patient.toArray().then(ps => { patients = ps });
+	db.patient.toArray().then((ps) => {
+		patients = ps;
+	});
 
 	let files: FileList;
 	$: {
-		if(files) {
+		if (files) {
 			ImportAllData(files[0], true).then(() => {
 				location.reload();
-			})
+			});
 		}
 	}
 
@@ -80,7 +82,10 @@
 	{:else}
 		{#each patients as p}
 			<div
-				class="block is-flex is-align-items-center is-size-3 {p.id === currentPatientId ? 'has-text-primary' : ''}"
+				class="block is-flex is-align-items-center is-size-3 {p.id ===
+				currentPatientId
+					? 'has-text-primary'
+					: ''}"
 			>
 				<div class="icon">
 					{#if p.id === currentPatientId}
@@ -113,12 +118,26 @@
 				{/if}
 			</div>
 		{/each}
+		<div class="block is-flex is-align-items-center is-size-3">
+			<button
+				class="button is-primary is-fullwidth"
+				on:click={() =>
+					(currentEditedPatient = { name: "New Patient", notes: "" })}
+			>
+				<span class="icon">
+					<AccountPlus />
+				</span>
+				<span>New Patient</span>
+			</button>
+		</div>
 	{/if}
 </section>
 <footer class="modal-card-foot">
 	<div class="buttons">
 		{#if currentEditedPatient}
-			<button class="button is-primary" on:click={SavePatient}>Save</button>
+			<button class="button is-primary" on:click={SavePatient}
+				>Save</button
+			>
 			<button
 				class="button"
 				on:click={() => (currentEditedPatient = undefined)}
@@ -126,13 +145,6 @@
 				Cancel
 			</button>
 		{:else}
-			<button
-				class="button is-primary"
-				on:click={() =>
-					(currentEditedPatient = { name: "New Patient", notes: "" })}
-				>
-					New Account
-				</button>
 			<button class="button is-info" on:click={Export}>Export</button>
 			<span class="file is-info mt-5">
 				<label class="file-label">
@@ -145,10 +157,10 @@
 					/>
 					<span class="file-cta">
 						<span class="file-label"> Import</span>
-				  	</span>
+					</span>
 				</label>
 			</span>
-			
+
 			<button class="button" on:click={CloseModal}>Cancel</button>
 		{/if}
 	</div>
