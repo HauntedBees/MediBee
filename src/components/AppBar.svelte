@@ -17,9 +17,11 @@
     function OpenModal(modal: string) {
         currentModal = modal;
         if (modal) {
-            location.hash = `${location.hash}-modal`;
+            if (location.hash.indexOf("-modal") < 0) {
+                location.hash = `${location.hash}-modal`;
+            }
         } else {
-            location.hash = location.hash.replace("-modal", "");
+            location.hash = location.hash.replace(/-modal/g, "");
             NavTo("", "");
         }
     }

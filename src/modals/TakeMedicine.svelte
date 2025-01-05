@@ -17,8 +17,9 @@
     let notes = "";
 
     window.addEventListener("hashchange", (e) => {
-        const oldPath = e.oldURL.split("#")[1];
-        if (oldPath.indexOf("-modal") >= 0) {
+        const oldPath = e.oldURL.split("#")[1] || "";
+        const newPath = e.newURL.split("#")[1] || "";
+        if (oldPath.indexOf("-modal") >= 0 && newPath.indexOf("-modal") < 0) {
             CloseModal();
         }
     });
@@ -26,7 +27,7 @@
     let medicine: Medicine | undefined;
     currentTakenMedicine.subscribe((m) => {
         if (!m || "frequency" in m) {
-            if (m) {
+            if (m && location.hash.indexOf("-modal") < 0) {
                 location.hash = `${location.hash}-modal`;
             }
             medicine = m;
@@ -92,6 +93,7 @@
     }
     function CloseModal() {
         currentTakenMedicine.set(undefined);
+        location.hash = location.hash.replace(/-modal/g, "");
     }
 </script>
 

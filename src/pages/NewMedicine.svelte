@@ -22,8 +22,8 @@
     };
     let patients: Patient[] = [];
     let currentPatientId = 0;
-    currentPatient.subscribe(p => currentPatientId = p.id || 0);
-    db.patient.toArray().then(p => patients = p);
+    currentPatient.subscribe((p) => (currentPatientId = p.id || 0));
+    db.patient.toArray().then((p) => (patients = p));
     function GoHome() {
         NavTo("Medicine List", "medicine-list");
     }
@@ -48,7 +48,9 @@
                         <svelte:component
                             this={icons[key]}
                             size="2rem"
-                            color={medicine.icon === key ? medicine.color : "white"}
+                            color={medicine.icon === key
+                                ? medicine.color
+                                : "white"}
                         />
                     </button>
                 {/each}
@@ -58,7 +60,9 @@
             <div id="colors" class="grid">
                 {#each colors as color}
                     <button
-                        class="orb {medicine.color === color ? 'active' : ''}"
+                        class="m-0 orb {medicine.color === color
+                            ? 'active'
+                            : ''}"
                         on:click={() => (medicine.color = color)}
                         style="background-color: {color}"
                         aria-label={color}
@@ -101,32 +105,37 @@
             </div>
             <div class="block mx-2">
                 {#if medicine.frequency === "daily"}
-                <div class="columns is-mobile">
-                    <input
-                        type="text"
-                        class="input column is-one-fifth"
-                        bind:value={medicine.dailyAmount}
-                        placeholder="Every N days"
-                    />
-                    <span class="column">&nbsp;time(s) per day</span>
-                </div>
+                    <div class="columns is-mobile">
+                        <input
+                            type="text"
+                            class="input column is-one-fifth"
+                            bind:value={medicine.dailyAmount}
+                            placeholder="Every N days"
+                        />
+                        <span class="column">&nbsp;time(s) per day</span>
+                    </div>
                 {:else if medicine.frequency === "weekly"}
-                <div class="columns is-mobile">
-                    <label class="column is-one-fifth" for="dayOfWeek">Every</label>
-                    <div class="column">
-                        <div class="select is-fullwidth">
-                            <select name="dayOfWeek" bind:value={medicine.dayOfWeek}>
-                                <option value={0}>Sunday</option>
-                                <option value={1}>Monday</option>
-                                <option value={2}>Tuesday</option>
-                                <option value={3}>Wednesday</option>
-                                <option value={4}>Thursday</option>
-                                <option value={5}>Friday</option>
-                                <option value={6}>Saturday</option>
-                            </select>
+                    <div class="columns is-mobile">
+                        <label class="column is-one-fifth" for="dayOfWeek"
+                            >Every</label
+                        >
+                        <div class="column">
+                            <div class="select is-fullwidth">
+                                <select
+                                    name="dayOfWeek"
+                                    bind:value={medicine.dayOfWeek}
+                                >
+                                    <option value={0}>Sunday</option>
+                                    <option value={1}>Monday</option>
+                                    <option value={2}>Tuesday</option>
+                                    <option value={3}>Wednesday</option>
+                                    <option value={4}>Thursday</option>
+                                    <option value={5}>Friday</option>
+                                    <option value={6}>Saturday</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
-                </div>
                 {/if}
             </div>
         </div>
@@ -140,27 +149,34 @@
             Everyone
         </label>
         <label class="radio">
-            <input type="radio" value={currentPatientId} bind:group={medicine.patientId} />
+            <input
+                type="radio"
+                value={currentPatientId}
+                bind:group={medicine.patientId}
+            />
             Just Me
         </label>
     </div>
 </div>
-<TextAreaControl name="Notes" bind:value={medicine.notes} />
+<div class="pb-6 mb-6">
+    <TextAreaControl name="Notes" bind:value={medicine.notes} />
+</div>
 <footer class="bottom-footer has-text-centered">
-    <button class="button is-primary is-large" on:click={SaveMedicine}>Save</button>
+    <button class="button is-primary is-large" on:click={SaveMedicine}
+        >Save</button
+    >
 </footer>
 
 <style>
     .orb {
         display: inline-block;
-        width: 32px;
-        height: 32px;
-        border-radius: 20px;
+        width: 24px;
+        height: 24px;
+        border-radius: 12px;
         border: 4px solid #ffffff00;
-        margin: 4px;
     }
     .orb.active {
-        border: 4px solid #CC00CC;
+        border: 4px solid #cc00cc;
     }
     .button-icon {
         background-color: #ffffff00;
