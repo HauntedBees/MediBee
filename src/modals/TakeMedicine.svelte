@@ -2,8 +2,14 @@
     import dayjs from "dayjs";
     import TextAreaControl from "../components/TextAreaControl.svelte";
     import db from "../lib/Data";
-    import { FormatDosage, type Medicine } from "../lib/Models";
+    import {
+        FormatDosage,
+        GetNotes,
+        MEDICINE_NOTE_ID,
+        type Medicine,
+    } from "../lib/Models";
     import { currentPatient, currentTakenMedicine } from "../lib/State";
+    import TextControl from "../components/TextControl.svelte";
 
     const dosages = [0.25, 0.5, 1, 2, 3, 4, 5];
 
@@ -13,6 +19,7 @@
     let editId = 0;
     let amountToTake = 1,
         amountIdx = 2;
+    let timeIsApprox = false;
     let currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
     let notes = "";
 
@@ -36,6 +43,7 @@
             amountToTake = 1;
             currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
             notes = "";
+            timeIsApprox = false;
         } else {
             db.medicine.get(m.medicineId).then((mm) => {
                 if (!mm) {
@@ -46,6 +54,7 @@
                 const baseAmountToTake = m.dosageAmount / mm.dosageAmount;
                 amountToTake = Math.round(baseAmountToTake * 4) / 4;
                 amountIdx = dosages.indexOf(amountToTake);
+                timeIsApprox = m.approximateTime || false;
                 if (amountIdx < 0) {
                     amountIdx = 2;
                 }
@@ -75,6 +84,7 @@
                     dosageUnit: medicine.dosageUnit,
                     timeTaken: dayjs(currentTime).toDate(),
                     notes: notes,
+                    approximateTime: timeIsApprox,
                 })
                 .then(CloseModal);
         } else {
@@ -87,6 +97,7 @@
                     dosageUnit: medicine.dosageUnit,
                     timeTaken: dayjs(currentTime).toDate(),
                     notes: notes,
+                    approximateTime: timeIsApprox,
                 })
                 .then(CloseModal);
         }
@@ -95,14 +106,27 @@
         currentTakenMedicine.set(undefined);
         location.hash = location.hash.replace(/-modal/g, "");
     }
+    function DeleteMedicine() {
+        if (confirm("Are you sure?")) {
+            db.taken.delete(editId).then(CloseModal);
+        }
+    }
 </script>
 
 {#if medicine}
     <div class="modal {medicine ? 'is-active' : ''}">
-        <div class="modal-background"></div>
+        <div
+            class="modal-background"
+            role="presentation"
+            on:click={CloseModal}
+        ></div>
         <div class="modal-card">
             <header class="modal-card-head">
-                <p class="modal-card-title">Taking {medicine.name}</p>
+                {#if medicine.category === "Notes"}
+                    <p class="modal-card-title">Logging {medicine.name}</p>
+                {:else}
+                    <p class="modal-card-title">Taking {medicine.name}</p>
+                {/if}
                 <button class="delete" aria-label="close" on:click={CloseModal}
                 ></button>
             </header>
@@ -134,7 +158,16 @@
                         >
                     </div>
                     <div class="field">
-                        <label for="time">Time</label>
+                        <label for="time">
+                            Time
+                            <span class="pl-6 is-size-7">
+                                <input
+                                    type="checkbox"
+                                    bind:checked={timeIsApprox}
+                                    class="mr-1"
+                                /> Approximate</span
+                            >
+                        </label>
                         <input
                             class="input"
                             id="time"
@@ -153,10 +186,20 @@
             </section>
             <footer class="modal-card-foot">
                 <div class="buttons">
-                    <button class="button is-success" on:click={TakeMedicine}
-                        >Take</button
-                    >
+                    <button class="button is-success" on:click={TakeMedicine}>
+                        {#if medicine.id === MEDICINE_NOTE_ID}
+                            Save
+                        {:else}
+                            Take
+                        {/if}
+                    </button>
                     <button class="button" on:click={CloseModal}>Cancel</button>
+                    {#if editId}
+                        <button
+                            class="button is-warning ml-6"
+                            on:click={DeleteMedicine}>Delete</button
+                        >
+                    {/if}
                 </div>
             </footer>
         </div>

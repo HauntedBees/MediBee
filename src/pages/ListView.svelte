@@ -3,8 +3,13 @@
     import NoteEdit from "svelte-material-icons/NoteEdit.svelte";
     import Magnify from "svelte-material-icons/Magnify.svelte";
     import db, { AnyStringMatch } from "../lib/Data";
-    import { FormatDosage, type MedicineTaken } from "../lib/Models";
+    import {
+        FormatDosage,
+        MEDICINE_NOTE_ID,
+        type MedicineTaken,
+    } from "../lib/Models";
     import { currentPatient, currentTakenMedicine } from "../lib/State";
+    import MedicineRow from "../components/MedicineRow.svelte";
 
     let amountToShow = 30;
     let takenList: (MedicineTaken | string)[] = [];
@@ -92,17 +97,6 @@
                 }
             });
     }
-    function GetDateFormat(m: MedicineTaken): string {
-        const time = dayjs(m.timeTaken);
-        const today = dayjs().startOf("day");
-        const yesterday = today.subtract(1, "day");
-        const potentialYearSuffix = time.isSame(today, "year") ? "" : "/YY";
-        if (time.isSame(today, "day") || time.isSame(yesterday, "day")) {
-            return time.format("h:mm A");
-        } else {
-            return time.format(`MM/DD${potentialYearSuffix} h:mm A`);
-        }
-    }
 </script>
 
 <div class="field">
@@ -124,28 +118,7 @@
         {#if typeof m === "string"}
             <h2 class="subtitle mb-2 mt-3">{m}</h2>
         {:else}
-            <div
-                class="columns is-gapless is-vcentered is-mobile mb-0 {m.notes
-                    ? ''
-                    : 'pb-4'}"
-            >
-                <div class="column is-4 is-size-7">{GetDateFormat(m)}</div>
-                <div class="column is-5">{m.medicineName}</div>
-                <div class="column is-2 is-size-7">{FormatDosage(m)}</div>
-                <div class="column is-1">
-                    <button
-                        on:click={() => currentTakenMedicine.set(m)}
-                        class="button is-info is-small is-rounded"
-                    >
-                        <span class="icon is-small">
-                            <NoteEdit />
-                        </span>
-                    </button>
-                </div>
-            </div>
-            {#if m.notes}
-                <div class="pb-4 is-size-7">{m.notes}</div>
-            {/if}
+            <MedicineRow {m} allowShortDates={true} />
         {/if}
     {/each}
     {#if hasMore}
@@ -154,12 +127,3 @@
         </button>
     {/if}
 </div>
-
-<style>
-    .columns {
-        margin-bottom: 0;
-    }
-    .column {
-        padding-bottom: 0;
-    }
-</style>
