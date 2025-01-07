@@ -2,10 +2,11 @@
     import TextControl from "../components/TextControl.svelte";
     import TextAreaControl from "../components/TextAreaControl.svelte";
     import icons from "../lib/Icons";
-    import type { Medicine, Patient } from "../lib/Models";
+    import type { Medicine, MedicineTaken, Patient } from "../lib/Models";
     import colors from "../lib/Colors";
     import db from "../lib/Data";
     import { currentPatient, NavTo } from "../lib/State";
+    import MedicineRow from "../components/MedicineRow.svelte";
     const iconList = Object.keys(icons);
     export let medicine: Medicine = {
         name: "",
@@ -21,6 +22,7 @@
         dayOfWeek: 0,
     };
     let patients: Patient[] = [];
+    let medicineHistory: MedicineTaken[] | undefined;
     let currentPatientId = 0;
     currentPatient.subscribe((p) => (currentPatientId = p.id || 0));
     db.patient.toArray().then((p) => (patients = p));
@@ -33,6 +35,33 @@
         } else {
             db.medicine.add(medicine).then(GoHome);
         }
+    }
+    window.addEventListener("hashchange", (e) => {
+        const oldPath = e.oldURL.split("#")[1] || "";
+        const newPath = e.newURL.split("#")[1] || "";
+        if (oldPath.indexOf("-modal") >= 0 && newPath.indexOf("-modal") < 0) {
+            CloseModal();
+        }
+    });
+    function ViewHistory() {
+        db.taken
+            .where("medicineId")
+            .equals(medicine.id || 0)
+            .and((c) => c.patientId === currentPatientId)
+            .toArray()
+            .then((res) => {
+                res.sort(
+                    (a, b) => b.timeTaken.getTime() - a.timeTaken.getTime(),
+                );
+                medicineHistory = res;
+                if (location.hash.indexOf("-modal") < 0) {
+                    location.hash = `${location.hash}-modal`;
+                }
+            });
+    }
+    function CloseModal() {
+        medicineHistory = undefined;
+        location.hash = location.hash.replace(/-modal/g, "");
     }
 </script>
 
@@ -138,6 +167,16 @@
                     </div>
                 {/if}
             </div>
+            {#if medicine.id}
+                <div class="block px-4">
+                    <button
+                        class="button is-fullwidth is-info"
+                        on:click={ViewHistory}
+                    >
+                        Show History
+                    </button>
+                </div>
+            {/if}
         </div>
     </div>
 </div>
@@ -166,6 +205,34 @@
         >Save</button
     >
 </footer>
+<div class="modal {medicineHistory ? 'is-active' : ''}">
+    <div
+        class="modal-background"
+        role="presentation"
+        on:click={CloseModal}
+    ></div>
+    <div class="modal-card">
+        <header class="modal-card-head">
+            <p class="modal-card-title">{medicine.name} History</p>
+            <button class="delete" aria-label="close" on:click={CloseModal}
+            ></button>
+        </header>
+        <section class="modal-card-body">
+            {#if medicineHistory}
+                <div class="px-2">
+                    {#each medicineHistory as m}
+                        <MedicineRow {m} />
+                    {/each}
+                </div>
+            {/if}
+        </section>
+        <footer class="modal-card-foot">
+            <div class="buttons">
+                <button class="button" on:click={CloseModal}>Close</button>
+            </div>
+        </footer>
+    </div>
+</div>
 
 <style>
     .orb {

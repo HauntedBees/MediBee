@@ -21,6 +21,8 @@
         amountIdx = 2;
     let timeIsApprox = false;
     let currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
+    let customAdditionalNotes = "";
+    let customAdditionalNotes2 = "";
     let notes = "";
 
     window.addEventListener("hashchange", (e) => {
@@ -33,6 +35,8 @@
 
     let medicine: Medicine | undefined;
     currentTakenMedicine.subscribe((m) => {
+        customAdditionalNotes = "";
+        customAdditionalNotes2 = "";
         if (!m || "frequency" in m) {
             if (m && location.hash.indexOf("-modal") < 0) {
                 location.hash = `${location.hash}-modal`;
@@ -44,6 +48,31 @@
             currentTime = dayjs().format("YYYY-MM-DDTHH:mm");
             notes = "";
             timeIsApprox = false;
+        } else if (m.medicineId === MEDICINE_NOTE_ID) {
+            const potentialNote = GetNotes().find(
+                (n) => m.medicineName === n.name,
+            );
+            if (!potentialNote) {
+                return;
+            }
+            medicine = potentialNote;
+            editId = m.id || 0;
+            amountToTake = 1;
+            amountIdx = 2;
+            currentTime = dayjs(m.timeTaken).format("YYYY-MM-DDTHH:mm");
+            timeIsApprox = false;
+            if (potentialNote.name === "Temperature") {
+                const splitNotes = m.notes.split(/;(.*)/g);
+                notes = splitNotes[1];
+                customAdditionalNotes = splitNotes[0];
+            } else if (potentialNote.name === "Test Result") {
+                const splitNotes = m.notes.split(";");
+                customAdditionalNotes = splitNotes.shift() || "";
+                customAdditionalNotes2 = splitNotes.shift() || "";
+                notes = splitNotes.join(";");
+            } else {
+                notes = m.notes;
+            }
         } else {
             db.medicine.get(m.medicineId).then((mm) => {
                 if (!mm) {
@@ -73,6 +102,11 @@
         if (!medicine) {
             return;
         }
+        const loggedNotes = customAdditionalNotes2
+            ? `${customAdditionalNotes};${customAdditionalNotes2};${notes}`
+            : customAdditionalNotes
+              ? `${customAdditionalNotes};${notes}`
+              : notes;
         if (editId) {
             db.taken
                 .update(editId, {
@@ -83,8 +117,8 @@
                     dosageAmount: medicine.dosageAmount * amountToTake,
                     dosageUnit: medicine.dosageUnit,
                     timeTaken: dayjs(currentTime).toDate(),
-                    notes: notes,
                     approximateTime: timeIsApprox,
+                    notes: loggedNotes,
                 })
                 .then(CloseModal);
         } else {
@@ -96,8 +130,8 @@
                     dosageAmount: medicine.dosageAmount * amountToTake,
                     dosageUnit: medicine.dosageUnit,
                     timeTaken: dayjs(currentTime).toDate(),
-                    notes: notes,
                     approximateTime: timeIsApprox,
+                    notes: loggedNotes,
                 })
                 .then(CloseModal);
         }
@@ -132,31 +166,35 @@
             </header>
             <section class="modal-card-body">
                 <div class="p-4">
-                    <div class="columns is-mobile">
-                        <strong class="column">Single Dose: </strong>
-                        <span class="column">{FormatDosage(medicine)}</span>
-                        <strong class="column">This Dose: </strong>
-                        <span class="column"
-                            >{FormatDosage({
-                                dosageAmount:
-                                    medicine.dosageAmount * amountToTake,
-                                dosageUnit: medicine.dosageUnit,
-                            })}</span
-                        >
-                    </div>
-                    <div class="block has-text-centered">
-                        <button
-                            class="button is-large {amountToTake == 0.25
-                                ? ''
-                                : 'is-primary'}"
-                            on:click={() => AdjustAmount(-1)}>-</button
-                        >
-                        <span class="button is-large mx-2">{amountToTake}</span>
-                        <button
-                            class="button is-large is-primary"
-                            on:click={() => AdjustAmount(1)}>+</button
-                        >
-                    </div>
+                    {#if medicine.category !== "Notes"}
+                        <div class="columns is-mobile">
+                            <strong class="column">Single Dose: </strong>
+                            <span class="column">{FormatDosage(medicine)}</span>
+                            <strong class="column">This Dose: </strong>
+                            <span class="column"
+                                >{FormatDosage({
+                                    dosageAmount:
+                                        medicine.dosageAmount * amountToTake,
+                                    dosageUnit: medicine.dosageUnit,
+                                })}</span
+                            >
+                        </div>
+                        <div class="block has-text-centered">
+                            <button
+                                class="button is-large {amountToTake == 0.25
+                                    ? ''
+                                    : 'is-primary'}"
+                                on:click={() => AdjustAmount(-1)}>-</button
+                            >
+                            <span class="button is-large mx-2"
+                                >{amountToTake}</span
+                            >
+                            <button
+                                class="button is-large is-primary"
+                                on:click={() => AdjustAmount(1)}>+</button
+                            >
+                        </div>
+                    {/if}
                     <div class="field">
                         <label for="time">
                             Time
@@ -175,6 +213,22 @@
                             type="datetime-local"
                         />
                     </div>
+                    {#if medicine.id === MEDICINE_NOTE_ID && medicine.name === "Temperature"}
+                        <TextControl
+                            name="Temperature"
+                            bind:value={customAdditionalNotes}
+                        />
+                    {/if}
+                    {#if medicine.id === MEDICINE_NOTE_ID && medicine.name === "Test Result"}
+                        <TextControl
+                            name="Test"
+                            bind:value={customAdditionalNotes}
+                        />
+                        <TextControl
+                            name="Result"
+                            bind:value={customAdditionalNotes2}
+                        />
+                    {/if}
                     {#if medicine.notes}
                         <div class="mb-2">
                             <div>Details</div>

@@ -2,13 +2,16 @@
 	import dayjs from "dayjs";
 	import ArrowLeft from "svelte-material-icons/ArrowLeft.svelte";
 	import ArrowRight from "svelte-material-icons/ArrowRight.svelte";
+	import Information from "svelte-material-icons/Information.svelte";
 	import {
 		FormatDosage,
+		MEDICINE_NOTE_ID,
 		type Medicine,
 		type MedicineTaken,
 	} from "../lib/Models";
 	import db from "../lib/Data";
 	import { currentPatient } from "../lib/State";
+	import MedicineRow from "../components/MedicineRow.svelte";
 
 	interface MedicineAmount {
 		medicineId: number;
@@ -55,7 +58,27 @@
 				medicineDictionary = {};
 				ms.forEach((m) => {
 					const key = dayjs(m.timeTaken).startOf("day").format();
-					if (medicineDictionary[key]) {
+					if (m.medicineId === MEDICINE_NOTE_ID) {
+						const found = (medicineDictionary[key] || []).find(
+							(m) => m.medicineId === MEDICINE_NOTE_ID,
+						);
+						if (found) {
+							found.details.push(m);
+						} else {
+							const newEntry = {
+								medicineId: MEDICINE_NOTE_ID,
+								medicineName: "Notes",
+								dosageAmount: 0,
+								dosageUnit: "",
+								details: [m],
+							};
+							if (medicineDictionary[key]) {
+								medicineDictionary[key].push(newEntry);
+							} else {
+								medicineDictionary[key] = [newEntry];
+							}
+						}
+					} else if (medicineDictionary[key]) {
 						let found = false;
 						for (
 							let i = 0;
@@ -105,6 +128,43 @@
 		];
 	}
 
+	let currentDayBeingViewed = "";
+	let currentDayMedicines: MedicineTaken[] = [];
+	function ViewDay(day: dayjs.Dayjs) {
+		currentDayBeingViewed = day.startOf("day").format();
+		if (location.hash.indexOf("-modal") < 0) {
+			location.hash = `${location.hash}-modal`;
+		}
+		db.taken
+			.where("timeTaken")
+			.between(
+				day.startOf("day").toDate(),
+				day.endOf("day").toDate(),
+				true,
+				false,
+			)
+			.and((m) => m.patientId === currentPatientId)
+			.toArray()
+			.then((ms) => {
+				ms.sort(
+					(a, b) => a.timeTaken.getTime() - b.timeTaken.getTime(),
+				);
+				currentDayMedicines = ms;
+			});
+	}
+	function CloseModal() {
+		currentDayBeingViewed = "";
+		currentDayMedicines = [];
+		location.hash = location.hash.replace(/-modal/g, "");
+	}
+	window.addEventListener("hashchange", (e) => {
+		const oldPath = e.oldURL.split("#")[1] || "";
+		const newPath = e.newURL.split("#")[1] || "";
+		if (oldPath.indexOf("-modal") >= 0 && newPath.indexOf("-modal") < 0) {
+			CloseModal();
+		}
+	});
+
 	let currentPatientId = 0;
 	currentPatient.subscribe((p) => {
 		currentPatientId = p.id || 0;
@@ -147,7 +207,7 @@
 		{#each weekStarts as week}
 			<tr>
 				{#each WeekArray(week) as day}
-					<td>
+					<td on:click={() => ViewDay(day)}>
 						<div
 							class="has-text-right {day.isSame(
 								currentMonth,
@@ -156,18 +216,23 @@
 								? ''
 								: 'has-text-light'}"
 						>
+							{#if medicineDictionary[day.format()]?.find((m) => m.medicineId === MEDICINE_NOTE_ID)}
+								<Information />
+							{/if}
 							{day.format("D")}
 						</div>
 						{#each medicineDictionary[day.format()] as m}
-							<div
-								class="medinfo mb-1 p-1 has-text-black"
-								style="background-color: {medicines[
-									m.medicineId
-								]?.color ?? '#FFFFFF'}"
-							>
-								<div>{m.medicineName}</div>
-								<div>{FormatDosage(m)}</div>
-							</div>
+							{#if m.medicineId !== MEDICINE_NOTE_ID}
+								<div
+									class="medinfo mb-1 p-1 has-text-black"
+									style="background-color: {medicines[
+										m.medicineId
+									]?.color ?? '#FFFFFF'}"
+								>
+									<div>{m.medicineName}</div>
+									<div>{FormatDosage(m)}</div>
+								</div>
+							{/if}
 						{/each}
 					</td>
 				{/each}
@@ -175,6 +240,40 @@
 		{/each}
 	</tbody>
 </table>
+<div class="modal {currentDayBeingViewed ? 'is-active' : ''}">
+	<div
+		class="modal-background"
+		role="presentation"
+		on:click={CloseModal}
+	></div>
+	<div class="modal-card">
+		<header class="modal-card-head">
+			<p class="modal-card-title">
+				{dayjs(currentDayBeingViewed).format("MMMM D, YYYY")}
+			</p>
+			<button class="delete" aria-label="close" on:click={CloseModal}
+			></button>
+		</header>
+		<section class="modal-card-body">
+			{#if currentDayMedicines.length === 0}
+				<div class="px-2">
+					No medicine was taken and no notes were logged on this day.
+				</div>
+			{:else}
+				<div class="px-2">
+					{#each currentDayMedicines as m}
+						<MedicineRow {m} />
+					{/each}
+				</div>
+			{/if}
+		</section>
+		<footer class="modal-card-foot">
+			<div class="buttons">
+				<button class="button" on:click={CloseModal}>Close</button>
+			</div>
+		</footer>
+	</div>
+</div>
 
 <style>
 	.medinfo {

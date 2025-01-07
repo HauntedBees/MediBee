@@ -11,16 +11,12 @@ export const currentTakenMedicine: Writable<Medicine | MedicineTaken | undefined
 export const currentPage: Writable<PageData> = writable({
     displayName: "",
     route: "",
-    backDisplayName: "",
-    backRoute: "",
     data: null
 });
 
 export interface PageData {
     displayName: string;
     route: string;
-    backDisplayName: string;
-    backRoute: string;
     data: any;
 }
 
@@ -28,13 +24,12 @@ export interface PageData {
 export function NavTo(
     name: string,
     route: string,
+    data: any = null
 ) {
     location.hash = `#${route}`;
     currentPage.set({
         displayName: name,
         route: route,
-        backDisplayName: "",
-        backRoute: "",
-        data: null
+        data: data
     });
 }

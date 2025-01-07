@@ -26,9 +26,11 @@
         }
     }
     window.addEventListener("hashchange", (e) => {
-        const newPath = e.newURL.split("#")[1];
-        const oldPath = e.oldURL.split("#")[1];
-        if (newPath.indexOf("-modal") >= 0) {
+        const newPath = e.newURL.split("#")[1] || "";
+        const oldPath = e.oldURL.split("#")[1] || "";
+        if (oldPath === "edit-medicine" && newPath === "medicine-list") {
+            NavTo("Medicine List", "medicine-list");
+        } else if (newPath.indexOf("-modal") >= 0) {
             return;
         } else if (oldPath.indexOf("-modal") >= 0) {
             currentModal = "";
@@ -50,9 +52,7 @@
     <span>{pageInfo.displayName || patient.name}</span>
 
     {#if pageInfo.route !== ""}
-        <button
-            on:click={() => NavTo(pageInfo.backDisplayName, pageInfo.backRoute)}
-        >
+        <button on:click={() => NavTo("", "")}>
             <Home />
         </button>
     {/if}
@@ -77,14 +77,14 @@
 </header>
 
 <div class="modal {currentModal == '' ? '' : 'is-active'}">
-    <div class="modal-background"></div>
+    <div
+        class="modal-background"
+        role="presentation"
+        on:click={() => OpenModal("")}
+    ></div>
     <div class="modal-card">
         {#if currentModal === "accounts"}
-            <ChangeAccount
-                on:close={() => {
-                    OpenModal("");
-                }}
-            />
+            <ChangeAccount on:close={() => OpenModal("")} />
         {/if}
     </div>
 </div>

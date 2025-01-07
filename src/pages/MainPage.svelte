@@ -1,7 +1,7 @@
 <script lang="ts">
     import { GetPatientMedicineInfo } from "../lib/Data";
     import icons from "../lib/Icons";
-    import type { Medicine } from "../lib/Models";
+    import { GetNotes, type Medicine } from "../lib/Models";
     import { currentPatient, currentTakenMedicine } from "../lib/State";
 
     interface MedicineNote {
@@ -32,8 +32,8 @@
     function GetMedicines() {
         currentPatient.subscribe(async (p) => {
             const info = await GetPatientMedicineInfo(p.id || 0);
-            allAsNeededMedicines = info.asNeededMedicines;
-            categories = info.categories;
+            allAsNeededMedicines = [...info.asNeededMedicines, ...GetNotes()];
+            categories = [...info.categories, "Notes"];
             medicinesToTakeToday = info.toTake;
         });
     }
@@ -85,10 +85,15 @@
                 >
             </div>
         </h2>
-        <div class="block p-4 fixed-grid has-3-cols">
+        <div
+            class="block p-4 fixed-grid {currentMedicineSelection[0]
+                .category === 'Notes'
+                ? 'has-2-cols'
+                : 'has-3-cols'}"
+        >
             <div class="grid">
                 {#each currentMedicineSelection as m}
-                    <div class="block is-fullwidth">
+                    <div class="block is-fullwidth mb-0">
                         <button
                             class="card has-text-dark"
                             style="background-color:{m.color}"

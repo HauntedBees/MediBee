@@ -10,8 +10,11 @@ import MedicalBag from "svelte-material-icons/MedicalBag.svelte";
 import Medication from "svelte-material-icons/Medication.svelte";
 import MortarPestlePlus from "svelte-material-icons/MortarPestlePlus.svelte";
 import Needle from "svelte-material-icons/Needle.svelte";
+import NoteEdit from "svelte-material-icons/NoteEdit.svelte";
+import NoteText from "svelte-material-icons/NoteText.svelte";
 import Pill from "svelte-material-icons/Pill.svelte";
 import PillMultiple from "svelte-material-icons/PillMultiple.svelte";
+import Thermometer from "svelte-material-icons/Thermometer.svelte";
 
 const icons: { [key: string]: any } = {
     BloodBag: BloodBag,
@@ -26,7 +29,10 @@ const icons: { [key: string]: any } = {
     Medication: Medication,
     MortarPestlePlus: MortarPestlePlus,
     Needle: Needle,
+    NoteEdit: NoteEdit,
+    NoteText: NoteText,
     Pill: Pill,
-    PillMultiple: PillMultiple
+    PillMultiple: PillMultiple,
+    Thermometer: Thermometer
 };
 export default icons;
