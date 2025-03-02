@@ -4,12 +4,7 @@
     import db, { AnyStringMatch } from "../lib/Data";
     import icons from "../lib/Icons";
     import type { Medicine } from "../lib/Models";
-    import {
-        currentPage,
-        currentPatient,
-        currentTakenMedicine,
-        NavTo,
-    } from "../lib/State";
+    import { currentPatient, currentTakenMedicine, NavTo } from "../lib/State";
     let medicines: Medicine[];
     let searchQuery = "";
     let currentPatientId = 0;

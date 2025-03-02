@@ -13,6 +13,7 @@
     let categories: string[];
     let medicinesToTakeToday: MedicineNote[];
     let currentMedicineSelection: Medicine[] | undefined;
+    let otherPatientsNeedMedicine = false;
     function OpenMedicine(m: Medicine) {
         currentTakenMedicine.set(m);
     }
@@ -31,16 +32,28 @@
 
     function GetMedicines() {
         currentPatient.subscribe(async (p) => {
-            const info = await GetPatientMedicineInfo(p.id || 0);
-            allAsNeededMedicines = [...info.asNeededMedicines, ...GetNotes()];
-            categories = [...info.categories, "Notes"];
-            medicinesToTakeToday = info.toTake;
+            GetPatientMedicineInfo(p.id || 0).then((info) => {
+                allAsNeededMedicines = [
+                    ...info.asNeededMedicines,
+                    ...GetNotes(),
+                ];
+                categories = [...info.categories, "Notes"];
+                medicinesToTakeToday = info.toTake;
+            });
+            GetPatientMedicineInfo(p.id || 0, true).then((otherPatientInfo) => {
+                otherPatientsNeedMedicine = otherPatientInfo.toTake.length > 0;
+            });
         });
     }
     GetMedicines();
 </script>
 
 <h2 class="subtitle mb-1">Today</h2>
+{#if otherPatientsNeedMedicine}
+    <div class="notification is-warning px-3 py-2">
+        Another patient has medicine they need to take today!
+    </div>
+{/if}
 {#if medicinesToTakeToday && medicinesToTakeToday.length}
     <div class="block p-4">
         {#each medicinesToTakeToday as m}

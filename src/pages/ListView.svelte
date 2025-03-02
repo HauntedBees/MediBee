@@ -1,13 +1,8 @@
 <script lang="ts">
     import dayjs from "dayjs";
-    import NoteEdit from "svelte-material-icons/NoteEdit.svelte";
     import Magnify from "svelte-material-icons/Magnify.svelte";
     import db, { AnyStringMatch } from "../lib/Data";
-    import {
-        FormatDosage,
-        MEDICINE_NOTE_ID,
-        type MedicineTaken,
-    } from "../lib/Models";
+    import { type MedicineTaken } from "../lib/Models";
     import { currentPatient, currentTakenMedicine } from "../lib/State";
     import MedicineRow from "../components/MedicineRow.svelte";
 

@@ -38,10 +38,13 @@ export function IsStringMatch(haystack: string, needle: string): boolean {
     return haystack.toLowerCase().indexOf(needle) >= 0;
 }
 
-export function GetPatientMedicineInfo(patientId: number): Promise<PatientMedicineInfo> {
+export function GetPatientMedicineInfo(patientId: number, other = false): Promise<PatientMedicineInfo> {
+    const comparisonFunc = other
+        ? (m: { patientId: number }) => m.patientId !== patientId
+        : (m: { patientId: number }) => m.patientId === patientId;
     return new Promise((resolve, _) => {
         Promise.all([
-            db.medicine.filter(m => m.patientId === patientId || m.patientId === 0).toArray(),
+            db.medicine.filter(m => comparisonFunc(m) || m.patientId === 0).toArray(),
             db.taken
                 .where("timeTaken")
                 .between(
@@ -50,7 +53,7 @@ export function GetPatientMedicineInfo(patientId: number): Promise<PatientMedici
                     true,
                     false,
                 )
-                .filter(m => m.patientId == patientId)
+                .filter(comparisonFunc)
                 .toArray(),
         ]).then((res) => {
             const medicines = res[0];

@@ -62,12 +62,12 @@
         </button>
     {/if}
     {#if pageInfo.route !== "list-view"}
-        <button on:click={() => NavTo("Taken Medicines", "list-view")}>
+        <button on:click={() => NavTo("Timeline", "list-view")}>
             <ViewList />
         </button>
     {/if}
     {#if pageInfo.route !== "calendar-view"}
-        <button on:click={() => NavTo("Taken Medicines", "calendar-view")}>
+        <button on:click={() => NavTo("Calendar", "calendar-view")}>
             <Calendar />
         </button>
     {/if}
