@@ -2,14 +2,23 @@
     import Magnify from "svelte-material-icons/Magnify.svelte";
     import PlusThick from "svelte-material-icons/PlusThick.svelte";
     import db, { AnyStringMatch } from "../lib/Data";
-    import icons from "../lib/Icons";
     import type { Medicine } from "../lib/Models";
-    import { currentPatient, currentTakenMedicine, NavTo } from "../lib/State";
-    let medicines: Medicine[];
+    import { currentPatient, NavTo } from "../lib/State";
+    import MedicineListItem from "../components/MedicineListItem.svelte";
+    let myMedicines: Medicine[] = [];
+    let allMedicines: Medicine[] = [];
     let searchQuery = "";
     let currentPatientId = 0;
+    let currentPatientName = "";
     currentPatient.subscribe((c) => {
         currentPatientId = c.id || 0;
+        if (c) {
+            currentPatientName = c.name.endsWith("s")
+                ? `${c.name}'`
+                : `${c.name}'s`;
+        } else {
+            currentPatientName = "My";
+        }
         Search();
     });
     function Search() {
@@ -26,15 +35,15 @@
             })
             .sortBy("name")
             .then((res) => {
-                medicines = res;
+                myMedicines = res.filter(
+                    (m) => m.patientId == currentPatientId,
+                );
+                allMedicines = res.filter((m) => m.patientId == 0);
             });
-    }
-    function onMedicineTapped(m: Medicine) {
-        NavTo(m.name, "edit-medicine", { medicine: m });
     }
 </script>
 
-<div class="columns is-mobile is-gapless is-vcentered">
+<div class="columns is-mobile is-gapless is-vcentered mx-4">
     <div class="column is-11">
         <div class="field mr-2">
             <p class="control has-icons-left">
@@ -62,25 +71,26 @@
         </button>
     </div>
 </div>
-{#each medicines as m}
-    <div class="box columns mb-1 is-gapless is-vcentered is-mobile">
-        <div class="column is-2 icon">
-            <svelte:component
-                this={icons[m.icon]}
-                size="2rem"
-                color={m.color}
-            />
-        </div>
-        <span class="column is-5">{m.name}</span>
-        <div class="column is-5 has-text-right">
-            <button
-                on:click={() => onMedicineTapped(m)}
-                class="button is-small is-primary">Edit</button
-            >
-            <button
-                on:click={() => currentTakenMedicine.set(m)}
-                class="button is-small is-success">Take</button
-            >
-        </div>
+{#if myMedicines.length}
+    <h2 class="subtitle">{currentPatientName} Medicines</h2>
+    {#each myMedicines as medicine}
+        <MedicineListItem {medicine} patientId={currentPatientId} />
+    {/each}
+{/if}
+{#if allMedicines.length}
+    <h2 class="subtitle">All Medicines</h2>
+    {#each allMedicines as medicine}
+        <MedicineListItem {medicine} patientId={currentPatientId} />
+    {/each}
+{/if}
+{#if !allMedicines.length && !myMedicines.length}
+    <div class="my-4 mx-3">
+        {#if searchQuery}
+            No results for "{searchQuery}" If you want to add a new medicine,
+            press the add button above.
+        {:else}
+            No medicines have been added yet. To add a new medicine, press the
+            add button above.
+        {/if}
     </div>
-{/each}
+{/if}

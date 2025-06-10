@@ -3,7 +3,7 @@
     import Magnify from "svelte-material-icons/Magnify.svelte";
     import db, { AnyStringMatch } from "../lib/Data";
     import { type MedicineTaken } from "../lib/Models";
-    import { currentPatient, currentTakenMedicine } from "../lib/State";
+    import { currentModal, currentPatient } from "../lib/State";
     import MedicineRow from "../components/MedicineRow.svelte";
 
     let amountToShow = 30;
@@ -18,7 +18,7 @@
         GetLatestTakens();
     });
 
-    currentTakenMedicine.subscribe((_) => {
+    currentModal.subscribe((_) => {
         GetLatestTakens();
     });
 

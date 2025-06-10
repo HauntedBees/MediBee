@@ -1,12 +1,12 @@
 import { writable, type Writable } from "svelte/store";
-import type { Medicine, MedicineTaken, Patient } from "./Models";
+import type { Patient } from "./Models";
 
 export const currentPatient: Writable<Patient> = writable({
     name: "",
     notes: ""
 });
 
-export const currentTakenMedicine: Writable<Medicine | MedicineTaken | undefined> = writable(undefined);
+export const currentModal: Writable<ModalData | null> = writable({ name: "" });
 
 export const currentPage: Writable<PageData> = writable({
     displayName: "",
@@ -20,6 +20,10 @@ export interface PageData {
     data: any;
 }
 
+export interface ModalData {
+    name: string;
+    data?: any;
+}
 
 export function NavTo(
     name: string,
@@ -32,4 +36,14 @@ export function NavTo(
         route: route,
         data: data
     });
+}
+
+export function OpenModal(name: string, data: any = undefined) {
+    currentModal.set({ name, data });
+    location.hash += "-modal";
+}
+
+export function CloseModal() {
+    currentModal.set(null);
+    location.hash = location.hash.replace("-modal", "");
 }

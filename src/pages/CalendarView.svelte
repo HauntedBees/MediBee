@@ -132,9 +132,6 @@
 	let currentDayMedicines: MedicineTaken[] = [];
 	function ViewDay(day: dayjs.Dayjs) {
 		currentDayBeingViewed = day.startOf("day").format();
-		if (location.hash.indexOf("-modal") < 0) {
-			location.hash = `${location.hash}-modal`;
-		}
 		db.taken
 			.where("timeTaken")
 			.between(
@@ -155,15 +152,7 @@
 	function CloseModal() {
 		currentDayBeingViewed = "";
 		currentDayMedicines = [];
-		location.hash = location.hash.replace(/-modal/g, "");
 	}
-	window.addEventListener("hashchange", (e) => {
-		const oldPath = e.oldURL.split("#")[1] || "";
-		const newPath = e.newURL.split("#")[1] || "";
-		if (oldPath.indexOf("-modal") >= 0 && newPath.indexOf("-modal") < 0) {
-			CloseModal();
-		}
-	});
 
 	let currentPatientId = 0;
 	currentPatient.subscribe((p) => {

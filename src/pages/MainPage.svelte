@@ -2,7 +2,7 @@
     import { GetPatientMedicineInfo } from "../lib/Data";
     import icons from "../lib/Icons";
     import { GetNotes, type Medicine } from "../lib/Models";
-    import { currentPatient, currentTakenMedicine } from "../lib/State";
+    import { currentModal, currentPatient, OpenModal } from "../lib/State";
 
     interface MedicineNote {
         medicine: Medicine;
@@ -15,9 +15,9 @@
     let currentMedicineSelection: Medicine[] | undefined;
     let otherPatientsNeedMedicine = false;
     function OpenMedicine(m: Medicine) {
-        currentTakenMedicine.set(m);
+        OpenModal("take", { medicine: m });
     }
-    currentTakenMedicine.subscribe((m) => {
+    currentModal.subscribe((m) => {
         if (!m) {
             // Refresh on close
             GetMedicines();

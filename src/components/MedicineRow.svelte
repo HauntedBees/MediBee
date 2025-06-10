@@ -6,7 +6,7 @@
         type MedicineTaken,
     } from "../lib/Models";
     import dayjs from "dayjs";
-    import { currentTakenMedicine } from "../lib/State";
+    import { OpenModal } from "../lib/State";
 
     export let m: MedicineTaken;
     export let allowShortDates = false;
@@ -164,7 +164,7 @@
     {/if}
     <div class="column is-1 has-text-right">
         <button
-            on:click={() => currentTakenMedicine.set(m)}
+            on:click={() => OpenModal("take", { medicine: m })}
             class="button px-2 py-1 is-info is-small"
         >
             <span class="icon is-small">

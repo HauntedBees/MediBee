@@ -5,7 +5,7 @@
     import type { Medicine, MedicineTaken, Patient } from "../lib/Models";
     import colors from "../lib/Colors";
     import db from "../lib/Data";
-    import { currentPatient, NavTo } from "../lib/State";
+    import { CloseModal, currentPatient, NavTo } from "../lib/State";
     import MedicineRow from "../components/MedicineRow.svelte";
     const iconList = Object.keys(icons);
     export let medicine: Medicine = {
@@ -35,33 +35,6 @@
         } else {
             db.medicine.add(medicine).then(GoHome);
         }
-    }
-    window.addEventListener("hashchange", (e) => {
-        const oldPath = e.oldURL.split("#")[1] || "";
-        const newPath = e.newURL.split("#")[1] || "";
-        if (oldPath.indexOf("-modal") >= 0 && newPath.indexOf("-modal") < 0) {
-            CloseModal();
-        }
-    });
-    function ViewHistory() {
-        db.taken
-            .where("medicineId")
-            .equals(medicine.id || 0)
-            .and((c) => c.patientId === currentPatientId)
-            .toArray()
-            .then((res) => {
-                res.sort(
-                    (a, b) => b.timeTaken.getTime() - a.timeTaken.getTime(),
-                );
-                medicineHistory = res;
-                if (location.hash.indexOf("-modal") < 0) {
-                    location.hash = `${location.hash}-modal`;
-                }
-            });
-    }
-    function CloseModal() {
-        medicineHistory = undefined;
-        location.hash = location.hash.replace(/-modal/g, "");
     }
 </script>
 
@@ -167,16 +140,6 @@
                     </div>
                 {/if}
             </div>
-            {#if medicine.id}
-                <div class="block px-4">
-                    <button
-                        class="button is-fullwidth is-info"
-                        on:click={ViewHistory}
-                    >
-                        Show History
-                    </button>
-                </div>
-            {/if}
         </div>
     </div>
 </div>

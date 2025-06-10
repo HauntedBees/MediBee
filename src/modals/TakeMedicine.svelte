@@ -8,7 +8,7 @@
         MEDICINE_NOTE_ID,
         type Medicine,
     } from "../lib/Models";
-    import { currentPatient, currentTakenMedicine } from "../lib/State";
+    import { CloseModal, currentModal, currentPatient } from "../lib/State";
     import TextControl from "../components/TextControl.svelte";
 
     const dosages = [0.25, 0.5, 1, 2, 3, 4, 5];
@@ -25,22 +25,16 @@
     let customAdditionalNotes2 = "";
     let notes = "";
 
-    window.addEventListener("hashchange", (e) => {
-        const oldPath = e.oldURL.split("#")[1] || "";
-        const newPath = e.newURL.split("#")[1] || "";
-        if (oldPath.indexOf("-modal") >= 0 && newPath.indexOf("-modal") < 0) {
-            CloseModal();
-        }
-    });
-
     let medicine: Medicine | undefined;
-    currentTakenMedicine.subscribe((m) => {
+    currentModal.subscribe((d) => {
+        if (d?.name !== "take") {
+            medicine = undefined;
+            return;
+        }
+        const m = d.data.medicine;
         customAdditionalNotes = "";
         customAdditionalNotes2 = "";
         if (!m || "frequency" in m) {
-            if (m && location.hash.indexOf("-modal") < 0) {
-                location.hash = `${location.hash}-modal`;
-            }
             medicine = m;
             editId = 0;
             amountIdx = 2;
@@ -135,10 +129,6 @@
                 })
                 .then(CloseModal);
         }
-    }
-    function CloseModal() {
-        currentTakenMedicine.set(undefined);
-        location.hash = location.hash.replace(/-modal/g, "");
     }
     function DeleteMedicine() {
         if (confirm("Are you sure?")) {
