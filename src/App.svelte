@@ -8,7 +8,7 @@
   import { Initialize } from "./lib/Settings";
   import Settings from "./pages/Settings.svelte";
   import { currentPage } from "./lib/State";
-  import TakeMedicine from "./modals/TakeMedicine.svelte";
+  import ModalHandler from "./components/ModalHandler.svelte";
   let pageName = "";
   let params = {};
   let loading = true;
@@ -21,7 +21,7 @@
 
 <AppBar />
 
-<main class={pageName === "calendar-view" ? "py-1 my-2" : "p-1 m-2"}>
+<main class="py-1 my-2">
   {#if loading}
     Loading
   {:else if pageName === ""}
@@ -38,4 +38,4 @@
     <NewMedicine {...params} />
   {/if}
 </main>
-<TakeMedicine />
+<ModalHandler />
