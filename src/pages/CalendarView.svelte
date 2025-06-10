@@ -10,8 +10,7 @@
 		type MedicineTaken,
 	} from "../lib/Models";
 	import db from "../lib/Data";
-	import { currentPatient } from "../lib/State";
-	import MedicineRow from "../components/MedicineRow.svelte";
+	import { currentPatient, OpenModal } from "../lib/State";
 
 	interface MedicineAmount {
 		medicineId: number;
@@ -128,10 +127,8 @@
 		];
 	}
 
-	let currentDayBeingViewed = "";
-	let currentDayMedicines: MedicineTaken[] = [];
 	function ViewDay(day: dayjs.Dayjs) {
-		currentDayBeingViewed = day.startOf("day").format();
+		const currentDayBeingViewed = day.startOf("day").format();
 		db.taken
 			.where("timeTaken")
 			.between(
@@ -146,12 +143,11 @@
 				ms.sort(
 					(a, b) => a.timeTaken.getTime() - b.timeTaken.getTime(),
 				);
-				currentDayMedicines = ms;
+				OpenModal("day", {
+					currentDayBeingViewed: currentDayBeingViewed,
+					currentDayMedicines: ms,
+				});
 			});
-	}
-	function CloseModal() {
-		currentDayBeingViewed = "";
-		currentDayMedicines = [];
 	}
 
 	let currentPatientId = 0;
@@ -229,40 +225,6 @@
 		{/each}
 	</tbody>
 </table>
-<div class="modal {currentDayBeingViewed ? 'is-active' : ''}">
-	<div
-		class="modal-background"
-		role="presentation"
-		on:click={CloseModal}
-	></div>
-	<div class="modal-card">
-		<header class="modal-card-head">
-			<p class="modal-card-title">
-				{dayjs(currentDayBeingViewed).format("MMMM D, YYYY")}
-			</p>
-			<button class="delete" aria-label="close" on:click={CloseModal}
-			></button>
-		</header>
-		<section class="modal-card-body">
-			{#if currentDayMedicines.length === 0}
-				<div class="px-2">
-					No medicine was taken and no notes were logged on this day.
-				</div>
-			{:else}
-				<div class="px-2">
-					{#each currentDayMedicines as m}
-						<MedicineRow {m} />
-					{/each}
-				</div>
-			{/if}
-		</section>
-		<footer class="modal-card-foot">
-			<div class="buttons">
-				<button class="button" on:click={CloseModal}>Close</button>
-			</div>
-		</footer>
-	</div>
-</div>
 
 <style>
 	.medinfo {

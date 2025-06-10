@@ -6,6 +6,7 @@
         type ModalData,
     } from "../lib/State";
     import ChangeAccount from "../modals/ChangeAccount.svelte";
+    import DayInfo from "../modals/DayInfo.svelte";
     import MedicineHistory from "../modals/MedicineHistory.svelte";
     import TakeMedicine from "../modals/TakeMedicine.svelte";
     let contents: ModalData | null = null;
@@ -42,5 +43,6 @@
         <ChangeAccount />
         <TakeMedicine />
         <MedicineHistory />
+        <DayInfo />
     </div>
 </div>
